@@ -20,6 +20,17 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // the listener when a certain tag-view is about to be removed
     private var mOnTagRemoveListener: OnTagRemoveListener? = null
 
+    private var mOnTagClickListener: OnTagClickListener? = null
+
+    // the possible background colors to be randomly chosen when creating a new tag-view
+    private var mPossibleBackgroundColorsHashSet: HashSet<Int> = hashSetOf()
+    var possibleBackgroundColors
+        get() = HashSet(mPossibleBackgroundColorsHashSet)
+        set(value) {
+            mPossibleBackgroundColorsHashSet.clear()
+            mPossibleBackgroundColorsHashSet.addAll(value)
+        }
+
     /* =================================================================== */
 
     // primary constructor
@@ -38,7 +49,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // add a new tag
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
-        val tagView = TagView(context, tagString)
+        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString) else TagView(context, tagString, mPossibleBackgroundColorsHashSet)
 
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
@@ -65,9 +76,6 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
             mTagStringsHashMap[tagString] = tagView
         }
     }
-
-    // push a lot of tags to the tail
-    fun pushAllTags(tagStrings: ArrayList<String>) { tagStrings.forEach { addTag(it) } }
 
     // remove a certain tag-view by index
     fun removeTagByIndex(index: Int): Boolean {

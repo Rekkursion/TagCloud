@@ -1,13 +1,34 @@
 package com.rekkursion.tagview
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.ImageButton
 import android.widget.TextView
+import kotlin.random.Random
 
 class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
+    enum class DefaultBackgroundColor(val color: Int) {
+        RED(Color.parseColor("#d9534f")),
+        GREEN(Color.parseColor("#5cb85c")),
+        BLUE(Color.parseColor("#0275d8")),
+        YELLOW(Color.parseColor("#f0ad4e")),
+        GRAY(Color.LTGRAY);
+
+        companion object {
+            fun getColorsHashSet(): HashSet<Int> = values().map { it.color }.toHashSet()
+        }
+    }
+
+    /* =================================================================== */
+
+    // the root of this tag-view
+    private val mHsvRoot: HorizontalScrollView
+
     // the text-view for showing the tag string
     private val mTxtvString: TextView
     var tagString: String get() = mTxtvString.text.toString(); set(value) { mTxtvString.text = value }
@@ -26,6 +47,7 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         LayoutInflater.from(context).inflate(R.layout.view_tag, this)
 
         // get views
+        mHsvRoot = findViewById(R.id.hsv_root)
         mTxtvString = findViewById(R.id.txtv_string)
         mImgbtnClose = findViewById(R.id.imgbtn_close)
 
@@ -36,8 +58,14 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
     }
 
     // secondary constructor
-    constructor(context: Context, tagString: String): this(context) {
+    constructor(context: Context,
+                tagString: String,
+                possibleBackgroundColors: HashSet<Int> = DefaultBackgroundColor.getColorsHashSet()): this(context) {
+        // set the tag string
         mTxtvString.text = tagString
+        // set the background color
+        mHsvRoot.setBackgroundResource(R.drawable.background_tag_view)
+        (mHsvRoot.background as GradientDrawable).setColor(possibleBackgroundColors.elementAt(Random.nextInt(possibleBackgroundColors.size)))
     }
 
     /* =================================================================== */
