@@ -31,7 +31,8 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 
     // the text-view for showing the tag string
     private val mTxtvString: TextView
-    var tagString: String get() = mTxtvString.text.toString(); set(value) { mTxtvString.text = value }
+//    var tagString: String get() = mTxtvString.text.toString(); set(value) { mTxtvString.text = value }
+    val tagString: String get() = mTxtvString.text.toString()
 
     // the image-button for closing (removing) this tag-view
     private val mImgbtnClose: ImageButton
@@ -72,6 +73,12 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 
     internal fun setOnRemoveListener(onRemoveListener: OnRemoveListener) {
         mOnRemoveListener = onRemoveListener
+    }
+
+    /* =================================================================== */
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        mTxtvString.setOnClickListener(l)
     }
 
     /* =================================================================== */

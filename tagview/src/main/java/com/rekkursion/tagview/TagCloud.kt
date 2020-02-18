@@ -17,9 +17,10 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // the listener when a new tag's string has already added before
     private var mOnTagStringConflictListener: OnTagStringConflictListener? = null
 
-    // the listener when a certain tag-view is about to be removed
+    // the listener when a certain tag-view is removed
     private var mOnTagRemoveListener: OnTagRemoveListener? = null
 
+    // the listener when a certain tag-view is clicked
     private var mOnTagClickListener: OnTagClickListener? = null
 
     // the possible background colors to be randomly chosen when creating a new tag-view
@@ -50,7 +51,6 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
         val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString) else TagView(context, tagString, mPossibleBackgroundColorsHashSet)
-
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
             override fun onRemove() {
@@ -62,6 +62,13 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
                 }
             }
         })
+
+        // set the on-click-listener of this tag-view
+        tagView.setOnClickListener { mOnTagClickListener?.onTagClick(
+            this@TagCloud,
+            tagView,
+            mFblTagsContainer.children.indexOf(tagView)
+        ) }
 
         // the string has already been added
         if (mTagStringsHashMap.containsKey(tagString))
@@ -112,9 +119,6 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
     /** setters */
 
-    // set the tag string of a tag-view by index
-    fun setTagStringAt(tagString: String, index: Int) { getTagAt(index).tagString = tagString }
-
     // set the listener when a new tag's string has already added before
     fun setOnTagStringConflictListener(onTagStringConflictListener: OnTagStringConflictListener) {
         mOnTagStringConflictListener = onTagStringConflictListener
@@ -123,5 +127,10 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // set the listener when a certain tag-view is about to be removed
     fun setOnTagRemoveListener(onTagRemoveListener: OnTagRemoveListener) {
         mOnTagRemoveListener = onTagRemoveListener
+    }
+
+    // the listener when a certain tag-view is clicked
+    fun setOnTagClickListener(onTagClickListener: OnTagClickListener) {
+        mOnTagClickListener = onTagClickListener
     }
 }
