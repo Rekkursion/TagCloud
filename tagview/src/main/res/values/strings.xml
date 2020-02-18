@@ -8,7 +8,7 @@
     <string name="str_add_tag">新增標籤</string>
 
     <!--<string name="str_select_a_tag">Select a tag</string>-->
-    <string name="str_select_a_tag">選擇標籤</string>
+    <string name="str_select_a_tag">請選擇標籤</string>
 
     <!--<string name="str_or_create_a_new_tag">Or create a new tag</string>-->
     <string name="str_or_create_a_new_tag">或是創造新標籤</string>
@@ -18,4 +18,7 @@
 
     <!--<string name="str_enter_a_new_tag">Enter a new tag</string>-->
     <string name="str_enter_a_new_tag">輸入新的標籤名</string>
+
+    <!--<string name="str_there_is_no_tag">There\'s no tag.</string>-->
+    <string name="str_there_is_no_tag">沒有任何存在的標籤</string>
 </resources>

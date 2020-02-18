@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageButton
@@ -61,9 +62,12 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
     // secondary constructor
     constructor(context: Context,
                 tagString: String,
+                isIndicator: Boolean,
                 possibleBackgroundColors: HashSet<Int> = DefaultBackgroundColor.getColorsHashSet()): this(context) {
         // set the tag string
         mTxtvString.text = tagString
+        // set the visibility of the imgbtn-close
+        if (isIndicator) mImgbtnClose.visibility = View.GONE
         // set the background color
         mHsvRoot.setBackgroundResource(R.drawable.background_tag_view)
         (mHsvRoot.background as GradientDrawable).setColor(possibleBackgroundColors.elementAt(Random.nextInt(possibleBackgroundColors.size)))
@@ -73,6 +77,10 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 
     internal fun setOnRemoveListener(onRemoveListener: OnRemoveListener) {
         mOnRemoveListener = onRemoveListener
+    }
+
+    internal fun setCloseImageButtonVisibility(visibility: Int) {
+        mImgbtnClose.visibility = visibility
     }
 
     /* =================================================================== */

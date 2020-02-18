@@ -1,10 +1,10 @@
 package com.rekkursion.tagview
 
+import android.app.AlertDialog
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
 import androidx.appcompat.widget.LinearLayoutCompat
 import kotlinx.android.synthetic.main.view_add_tag_dialog.view.*
 
@@ -12,18 +12,29 @@ internal class AddTagDialogView(context: Context, attrs: AttributeSet? = null): 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_add_tag_dialog, this)
 
-        spnSelect.adapter = ArrayAdapter<String>(
-            context,
-            R.layout.spinner_item_add_tag_dialog,
-            GlobalTagManager.existTagList()
-        )
+        btnSelect.setOnClickListener {
+            if (GlobalTagManager.existTagList().isNotEmpty()) {
+                AlertDialog.Builder(context)
+                    .setTitle(context.getString(R.string.str_select_a_tag))
+                    .setItems(GlobalTagManager.existTagList().toTypedArray()) { _, index ->
+                        btnSelect.text = GlobalTagManager.existTagList().getOrNull(index) ?: context.getString(R.string.str_select_a_tag)
+                    }
+                    .create()
+                    .show()
+            } else {
+                AlertDialog.Builder(context)
+                    .setMessage(context.getString(R.string.str_there_is_no_tag))
+                    .create()
+                    .show()
+            }
+        }
 
         edtAddNew.visibility = View.GONE
 
         btnBackToSelect.visibility = View.GONE
 
         btnBackToSelect.setOnClickListener {
-            spnSelect.visibility = View.VISIBLE
+            btnSelect.visibility = View.VISIBLE
             edtAddNew.visibility = View.GONE
             btnBackToSelect.visibility = View.GONE
             btnOrAddNew.visibility = View.VISIBLE
@@ -31,15 +42,15 @@ internal class AddTagDialogView(context: Context, attrs: AttributeSet? = null): 
 
         btnOrAddNew.text = context.getString(R.string.str_or_create_a_new_tag)
         btnOrAddNew.setOnClickListener {
-            spnSelect.visibility = View.GONE
+            btnSelect.visibility = View.GONE
             edtAddNew.visibility = View.VISIBLE
             btnBackToSelect.visibility = View.VISIBLE
             btnOrAddNew.visibility = View.GONE
         }
     }
 
-    internal fun getTagString(): String = if (spnSelect.visibility == View.VISIBLE && GlobalTagManager.existTagList().isNotEmpty())
-        spnSelect.selectedItem as String
+    internal fun getTagString(): String = if (btnSelect.visibility == View.VISIBLE && GlobalTagManager.existTagList().isNotEmpty() && btnSelect.text.toString() != context.getString(R.string.str_select_a_tag))
+        btnSelect.text.toString()
     else
         edtAddNew.text.toString()
 }

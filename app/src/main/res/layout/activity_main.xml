@@ -10,6 +10,7 @@
 
     <com.rekkursion.tagview.TagCloud
             android:id="@+id/tag_cloud"
+            app:is_indicator="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

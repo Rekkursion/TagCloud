@@ -4,12 +4,30 @@ import android.app.AlertDialog
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.view.children
 import com.google.android.flexbox.FlexboxLayout
 
 class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
+    private var mIsIndicator: Boolean = false
+    var isIndicator
+        get() = mIsIndicator
+        set(value) {
+            mIsIndicator = value
+            if (mIsIndicator) {
+                mImgbtnAddNewTag.visibility = View.GONE
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.GONE) }
+            }
+            else {
+                mImgbtnAddNewTag.visibility = View.VISIBLE
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.VISIBLE) }
+            }
+        }
+
     // for placing all tag-views
     private val mFblTagsContainer: FlexboxLayout
 
@@ -48,6 +66,18 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mFblTagsContainer = findViewById(R.id.fbl_tags_container)
         mImgbtnAddNewTag = findViewById(R.id.imgbtn_add_new_tag)
 
+        // get attributes
+        attrs?.let {
+            val ta = context.obtainStyledAttributes(attrs, R.styleable.TagCloud)
+            mIsIndicator = ta.getBoolean(R.styleable.TagCloud_is_indicator, false)
+            ta.recycle()
+        }
+
+        // set visibilities
+        if (mIsIndicator) {
+            mImgbtnAddNewTag.visibility = View.GONE
+        }
+
         // set events
         mImgbtnAddNewTag.setOnClickListener {
             val dialogView = AddTagDialogView(context)
@@ -83,7 +113,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // add a new tag
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
-        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString) else TagView(context, tagString, mPossibleBackgroundColorsHashSet)
+        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString, mIsIndicator) else TagView(context, tagString, mIsIndicator, mPossibleBackgroundColorsHashSet)
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
             override fun onRemove() {
