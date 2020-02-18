@@ -23,4 +23,10 @@
             android:text="Add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+
+    <com.rekkursion.tagview.TagCloud
+            android:layout_marginTop="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 </androidx.appcompat.widget.LinearLayoutCompat>

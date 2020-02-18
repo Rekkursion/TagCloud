@@ -2,10 +2,8 @@ package com.rekkursion.tagview
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.view.children
@@ -52,21 +50,16 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
         // set events
         mImgbtnAddNewTag.setOnClickListener {
-            // the edit-text for the user enters the tag string
-            val edtNewTagString = EditText(context)
-            edtNewTagString.requestFocus()
-
-            // the dialog shows for typing
+            val dialogView = AddTagDialogView(context)
             val dialog = AlertDialog.Builder(context)
-                .setTitle("Enter the tag")
-                .setView(edtNewTagString)
+                .setView(dialogView)
                 .setPositiveButton("OK", null)
                 .setNegativeButton("Cancel", null)
                 .create()
             dialog.setOnShowListener {
                 val btnPositive = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
                 btnPositive.setOnClickListener {
-                    if (doesStringAlreadyExists(edtNewTagString.text.toString())) {
+                    if (doesStringAlreadyExist(dialogView.getTagString())) {
                         AlertDialog.Builder(context)
                             .setMessage("The tag already exists")
                             .setPositiveButton("OK", null)
@@ -74,7 +67,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
                             .show()
                     }
                     else {
-                        addTag(edtNewTagString.text.toString())
+                        addTag(dialogView.getTagString())
                         dialog.dismiss()
                     }
                 }
@@ -121,6 +114,9 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
             // add the string of new tag into the hash-set
             mTagStringsHashMap[tagString] = tagView
+
+            // add the string of new tag into the global-tag-manager
+            GlobalTagManager.addTag(tagString)
         }
     }
 
@@ -133,6 +129,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mFblTagsContainer.removeView(tagView)
         mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount - 1)
         mTagStringsHashMap.remove(tagView.tagString)
+        GlobalTagManager.removeTag(tagView.tagString)
 
         return true
     }
@@ -165,7 +162,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     fun getTagStringAt(index: Int): String? = getTagAt(index)?.tagString
 
     // check if a string is conflicted w/ the already-exists tags
-    fun doesStringAlreadyExists(str: String): Boolean = mTagStringsHashMap.containsKey(str)
+    fun doesStringAlreadyExist(str: String): Boolean = mTagStringsHashMap.containsKey(str)
 
     /* =================================================================== */
 
