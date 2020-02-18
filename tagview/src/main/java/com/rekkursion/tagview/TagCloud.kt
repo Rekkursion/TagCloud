@@ -2,16 +2,43 @@ package com.rekkursion.tagview
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.EditText
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.view.children
 import com.google.android.flexbox.FlexboxLayout
 
 class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
+    // if this tag-cloud is an indicator or not, default: false
+    private var mIsIndicator: Boolean = false
+    var isIndicator
+        get() = mIsIndicator
+        set(value) {
+            mIsIndicator = value
+            if (mIsIndicator) {
+                mImgbtnAddNewTag.visibility = View.GONE
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.GONE) }
+            }
+            else {
+                mImgbtnAddNewTag.visibility = View.VISIBLE
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.VISIBLE) }
+            }
+        }
+
+    // should show the appearing times or not, default: true
+    private var mIsShowingAppearingTimes: Boolean = true
+    var isShowingAppearingTimes
+        get() = mIsShowingAppearingTimes
+        set(value) {
+            mIsShowingAppearingTimes = value
+            mFblTagsContainer.children
+                .forEach { (it as? TagView)?.setShouldShowAppearingTimes(mIsShowingAppearingTimes) }
+        }
+
     // for placing all tag-views
     private val mFblTagsContainer: FlexboxLayout
 
@@ -50,23 +77,31 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mFblTagsContainer = findViewById(R.id.fbl_tags_container)
         mImgbtnAddNewTag = findViewById(R.id.imgbtn_add_new_tag)
 
+        // get attributes
+        attrs?.let {
+            val ta = context.obtainStyledAttributes(attrs, R.styleable.TagCloud)
+            mIsIndicator = ta.getBoolean(R.styleable.TagCloud_is_indicator, false)
+            mIsShowingAppearingTimes = ta.getBoolean(R.styleable.TagCloud_is_showing_appearing_times, true)
+            ta.recycle()
+        }
+
+        // set visibilities
+        if (mIsIndicator) {
+            mImgbtnAddNewTag.visibility = View.GONE
+        }
+
         // set events
         mImgbtnAddNewTag.setOnClickListener {
-            // the edit-text for the user enters the tag string
-            val edtNewTagString = EditText(context)
-            edtNewTagString.requestFocus()
-
-            // the dialog shows for typing
+            val dialogView = AddTagDialogView(context)
             val dialog = AlertDialog.Builder(context)
-                .setTitle("Enter the tag")
-                .setView(edtNewTagString)
+                .setView(dialogView)
                 .setPositiveButton("OK", null)
                 .setNegativeButton("Cancel", null)
                 .create()
             dialog.setOnShowListener {
                 val btnPositive = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
                 btnPositive.setOnClickListener {
-                    if (doesStringAlreadyExists(edtNewTagString.text.toString())) {
+                    if (doesStringAlreadyExist(dialogView.getTagString())) {
                         AlertDialog.Builder(context)
                             .setMessage("The tag already exists")
                             .setPositiveButton("OK", null)
@@ -74,7 +109,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
                             .show()
                     }
                     else {
-                        addTag(edtNewTagString.text.toString())
+                        addTag(dialogView.getTagString())
                         dialog.dismiss()
                     }
                 }
@@ -90,7 +125,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // add a new tag
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
-        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString) else TagView(context, tagString, mPossibleBackgroundColorsHashSet)
+        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes) else TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes, mPossibleBackgroundColorsHashSet)
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
             override fun onRemove() {
@@ -121,6 +156,10 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
             // add the string of new tag into the hash-set
             mTagStringsHashMap[tagString] = tagView
+
+            // add the string of new tag into the global-tag-manager
+            GlobalTagManager.addTag(tagString)
+            updateAppearingTimes(tagString)
         }
     }
 
@@ -133,6 +172,8 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mFblTagsContainer.removeView(tagView)
         mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount - 1)
         mTagStringsHashMap.remove(tagView.tagString)
+        GlobalTagManager.removeTag(tagView.tagString)
+        updateAppearingTimes(tagView.tagString)
 
         return true
     }
@@ -143,6 +184,14 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
             if (it is TagView && it.tagString == tagString)
                 return removeTagByIndex(idx)
         return false
+    }
+
+    // update the appearing times
+    private fun updateAppearingTimes(tagString: String) {
+        val tagView = mFblTagsContainer
+            .children
+            .find { (it is TagView) && it.tagString == tagString } as? TagView
+        tagView?.updateAppearingTimes()
     }
 
     /* =================================================================== */
@@ -165,7 +214,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     fun getTagStringAt(index: Int): String? = getTagAt(index)?.tagString
 
     // check if a string is conflicted w/ the already-exists tags
-    fun doesStringAlreadyExists(str: String): Boolean = mTagStringsHashMap.containsKey(str)
+    fun doesStringAlreadyExist(str: String): Boolean = mTagStringsHashMap.containsKey(str)
 
     /* =================================================================== */
 

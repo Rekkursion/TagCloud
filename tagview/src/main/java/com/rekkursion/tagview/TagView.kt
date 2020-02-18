@@ -1,10 +1,12 @@
 package com.rekkursion.tagview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageButton
@@ -34,6 +36,9 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 //    var tagString: String get() = mTxtvString.text.toString(); set(value) { mTxtvString.text = value }
     val tagString: String get() = mTxtvString.text.toString()
 
+    // the text-view for showing the appearing times
+    private val mTxtvAppearingTimes: TextView
+
     // the image-button for closing (removing) this tag-view
     private val mImgbtnClose: ImageButton
 
@@ -50,6 +55,7 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         // get views
         mHsvRoot = findViewById(R.id.hsv_root)
         mTxtvString = findViewById(R.id.txtv_string)
+        mTxtvAppearingTimes = findViewById(R.id.txtv_appearing_times)
         mImgbtnClose = findViewById(R.id.imgbtn_close)
 
         // set events
@@ -59,11 +65,26 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
     }
 
     // secondary constructor
+    @SuppressLint("SetTextI18n")
     constructor(context: Context,
                 tagString: String,
+                isIndicator: Boolean,
+                isShowingAppearingTimes: Boolean,
                 possibleBackgroundColors: HashSet<Int> = DefaultBackgroundColor.getColorsHashSet()): this(context) {
         // set the tag string
         mTxtvString.text = tagString
+
+        // set the visibility of imgbtn-close
+        if (isIndicator)
+            mImgbtnClose.visibility = View.GONE
+
+        // set the visibility of txtv-appearing-times
+        if (!isShowingAppearingTimes)
+            mTxtvAppearingTimes.visibility = View.GONE
+
+        // set the text of txtv-appearing-times
+        updateAppearingTimes()
+
         // set the background color
         mHsvRoot.setBackgroundResource(R.drawable.background_tag_view)
         (mHsvRoot.background as GradientDrawable).setColor(possibleBackgroundColors.elementAt(Random.nextInt(possibleBackgroundColors.size)))
@@ -75,6 +96,23 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         mOnRemoveListener = onRemoveListener
     }
 
+    internal fun setCloseImageButtonVisibility(visibility: Int) {
+        mImgbtnClose.visibility = visibility
+    }
+
+    internal fun setShouldShowAppearingTimes(shouldShowAppearingTimes: Boolean) {
+        mTxtvAppearingTimes.visibility = if (shouldShowAppearingTimes)
+            View.VISIBLE
+        else
+            View.GONE
+        updateAppearingTimes()
+    }
+
+    @SuppressLint("SetTextI18n")
+    internal fun updateAppearingTimes() {
+        mTxtvAppearingTimes.text = "(${GlobalTagManager.getTagAppearingTimes(mTxtvString.text.toString())})"
+    }
+
     /* =================================================================== */
 
     override fun setOnClickListener(l: OnClickListener?) {
@@ -83,6 +121,7 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 
     /* =================================================================== */
 
+    // interface: be invoked when removing this tag
     internal interface OnRemoveListener {
         fun onRemove()
     }
