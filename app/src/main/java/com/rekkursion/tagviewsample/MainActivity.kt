@@ -54,5 +54,16 @@ class MainActivity : AppCompatActivity() {
         btnAddTag.setOnClickListener {
             tagCloud.addTag(edtText.text.toString())
         }
+
+        val btnSetIsIndicatorOrNot = findViewById<Button>(R.id.btn_set_is_indicator_or_not)
+        btnSetIsIndicatorOrNot.setOnClickListener {
+            tagCloud.isIndicator = tagCloud.isIndicator.not()
+        }
+
+        // show or hide the appearing times
+        val btnShowOrHideAppearingTimes = findViewById<Button>(R.id.btn_show_or_hide_appearing_times)
+        btnShowOrHideAppearingTimes.setOnClickListener {
+            tagCloud.isShowingAppearingTimes = tagCloud.isShowingAppearingTimes.not()
+        }
     }
 }

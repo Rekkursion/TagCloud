@@ -11,6 +11,7 @@ import androidx.core.view.children
 import com.google.android.flexbox.FlexboxLayout
 
 class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
+    // if this tag-cloud is an indicator or not, default: false
     private var mIsIndicator: Boolean = false
     var isIndicator
         get() = mIsIndicator
@@ -26,6 +27,16 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
                 mFblTagsContainer.children
                     .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.VISIBLE) }
             }
+        }
+
+    // should show the appearing times or not, default: true
+    private var mIsShowingAppearingTimes: Boolean = true
+    var isShowingAppearingTimes
+        get() = mIsShowingAppearingTimes
+        set(value) {
+            mIsShowingAppearingTimes = value
+            mFblTagsContainer.children
+                .forEach { (it as? TagView)?.setShouldShowAppearingTimes(mIsShowingAppearingTimes) }
         }
 
     // for placing all tag-views
@@ -70,6 +81,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         attrs?.let {
             val ta = context.obtainStyledAttributes(attrs, R.styleable.TagCloud)
             mIsIndicator = ta.getBoolean(R.styleable.TagCloud_is_indicator, false)
+            mIsShowingAppearingTimes = ta.getBoolean(R.styleable.TagCloud_is_showing_appearing_times, true)
             ta.recycle()
         }
 
@@ -113,7 +125,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // add a new tag
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
-        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString, mIsIndicator) else TagView(context, tagString, mIsIndicator, mPossibleBackgroundColorsHashSet)
+        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes) else TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes, mPossibleBackgroundColorsHashSet)
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
             override fun onRemove() {
@@ -147,6 +159,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
             // add the string of new tag into the global-tag-manager
             GlobalTagManager.addTag(tagString)
+            updateAppearingTimes(tagString)
         }
     }
 
@@ -160,6 +173,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount - 1)
         mTagStringsHashMap.remove(tagView.tagString)
         GlobalTagManager.removeTag(tagView.tagString)
+        updateAppearingTimes(tagView.tagString)
 
         return true
     }
@@ -170,6 +184,14 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
             if (it is TagView && it.tagString == tagString)
                 return removeTagByIndex(idx)
         return false
+    }
+
+    // update the appearing times
+    private fun updateAppearingTimes(tagString: String) {
+        val tagView = mFblTagsContainer
+            .children
+            .find { (it is TagView) && it.tagString == tagString } as? TagView
+        tagView?.updateAppearingTimes()
     }
 
     /* =================================================================== */
