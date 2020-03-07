@@ -108,6 +108,9 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
             // add the string of new tag into the hash-set
             mTagStringsHashMap[tagString] = tagView
+
+            // add the string of new tag into the global-tag-manager
+            updateAppearingTimes(tagString)
         }
     }
 
@@ -120,6 +123,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         mFblTagsContainer.removeView(tagView)
         mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount)
         mTagStringsHashMap.remove(tagView.tagString)
+        updateAppearingTimes(tagView.tagString)
 
         return true
     }
@@ -130,6 +134,13 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
             if (it is TagView && it.tagString == tagString)
                 return removeTagByIndex(idx)
         return false
+    }
+
+    // update the appearing times
+    private fun updateAppearingTimes(tagString: String) {
+        val tagView = mFblTagsContainer
+            .children
+            .find { (it is TagView) && it.tagString == tagString } as? TagView
     }
 
     /* =================================================================== */
