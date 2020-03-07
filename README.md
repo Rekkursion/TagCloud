@@ -27,4 +27,4 @@ TagCloud is an Android library that provides the feature of displaying a list of
 </code></pre>
 
 ## Usage
-...
+See <a href="https://github.com/Rekkursion/TagView/blob/master/app/src/main/java/com/rekkursion/tagviewsample/MainActivity.kt">this example</a>.
