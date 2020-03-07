@@ -1,18 +1,13 @@
 <resources>
-    <string name="app_name">TagView</string>
+    <string name="app_name" translatable="false">TagView</string>
 
-    <!--<string name="str_close">close</string>-->
     <string name="str_close">關閉</string>
 
-    <!--<string name="str_add_new_tag">Add new tag.</string>-->
     <string name="str_add_new_tag">新增標籤</string>
 
-    <!--<string name="str_type_new_tag_here">Type the new tag here.</string>-->
     <string name="str_type_new_tag_here">在此處輸入新的標籤名稱</string>
 
-    <!--<string name="str_submit">Submit</string>-->
     <string name="str_submit">送出</string>
 
-    <!--<string name="str_cancel">Cancel</string>-->
     <string name="str_cancel">取消</string>
 </resources>

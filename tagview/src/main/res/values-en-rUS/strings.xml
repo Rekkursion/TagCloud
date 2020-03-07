@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TagView</string>
+    <string name="str_add_new_tag">Add new tag.</string>
+    <string name="str_cancel">Cancel</string>
+    <string name="str_close">Close</string>
+    <string name="str_submit">Submit</string>
+    <string name="str_type_new_tag_here">Type the new tag here.</string>
+</resources>
