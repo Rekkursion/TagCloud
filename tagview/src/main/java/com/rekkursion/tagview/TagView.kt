@@ -82,9 +82,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         if (!isShowingAppearingTimes)
             mTxtvAppearingTimes.visibility = View.GONE
 
-        // set the text of txtv-appearing-times
-        updateAppearingTimes()
-
         // set the background color
         mHsvRoot.setBackgroundResource(R.drawable.background_tag_view)
         (mHsvRoot.background as GradientDrawable).setColor(possibleBackgroundColors.elementAt(Random.nextInt(possibleBackgroundColors.size)))
@@ -105,12 +102,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
             View.VISIBLE
         else
             View.GONE
-        updateAppearingTimes()
-    }
-
-    @SuppressLint("SetTextI18n")
-    internal fun updateAppearingTimes() {
-        mTxtvAppearingTimes.text = "(${GlobalTagManager.getTagAppearingTimes(mTxtvString.text.toString())})"
     }
 
     /* =================================================================== */

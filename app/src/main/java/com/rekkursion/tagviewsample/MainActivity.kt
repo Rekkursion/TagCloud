@@ -24,11 +24,7 @@ class MainActivity : AppCompatActivity() {
         // set the remove listener
         tagCloud.setOnTagRemoveListener(object: OnTagRemoveListener {
             override fun onTagRemove(tagCloud: TagCloud, tagView: TagView, index: Int, numOfTagsAfterRemoving: Int) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "#$index removed, remains $numOfTagsAfterRemoving tag${if (numOfTagsAfterRemoving <= 1) "" else "s"}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@MainActivity, "#$index removed, remains $numOfTagsAfterRemoving tags", Toast.LENGTH_SHORT).show()
             }
         })
 

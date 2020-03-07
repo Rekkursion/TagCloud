@@ -9,12 +9,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <ImageButton
-            android:id="@+id/imgbtn_add_new_tag"
-            android:src="@drawable/ic_add_gray_24dp"
-            android:contentDescription="@string/str_add_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle" />
 </com.google.android.flexbox.FlexboxLayout>

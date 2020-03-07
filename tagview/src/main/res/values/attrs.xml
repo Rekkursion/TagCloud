@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TagCloud">
+        <attr name="is_indicator" format="boolean" />
+        <attr name="is_showing_appearing_times" format="boolean" />
+    </declare-styleable>
+</resources>
