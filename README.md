@@ -1,5 +1,5 @@
 # TagCloud & TagView
-TagCloud is an Android library that provides the feature of displaying a list of tags.
+TagCloud is an Android library that provides the feature of displaying a list of tags, including the adding and removing operations of tags.
 
 ## Features
 * "is_indicator" attribute
