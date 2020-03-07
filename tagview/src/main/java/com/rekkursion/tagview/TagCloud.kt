@@ -175,6 +175,13 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // get the tag string of a tag-view by index
     fun getTagStringAt(index: Int): String? = getTagAt(index)?.tagString
 
+    // get strings of all tags
+    fun getAllTagStrings(): List<String> = mFblTagsContainer
+        .children
+        .filter { it is TagView }
+        .map { (it as TagView).tagString }
+        .toList()
+
     // check if this tag-cloud has a certain tag by its string
     fun containsTag(tagString: String): Boolean = mTagStringsHashMap.containsKey(tagString)
 
