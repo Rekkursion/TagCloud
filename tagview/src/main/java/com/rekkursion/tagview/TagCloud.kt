@@ -71,13 +71,13 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         // set events
         mImgbtnAddTag.setOnClickListener {
             val edtNewTag = EditText(context)
-            edtNewTag.hint = "Type the new tag here."
+            edtNewTag.hint = context.getString(R.string.str_type_new_tag_here)
 
             val dialog = AlertDialog.Builder(context)
-                .setTitle("Add a new tag.")
+                .setTitle(R.string.str_add_new_tag)
                 .setView(edtNewTag)
-                .setPositiveButton("Submit", null)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(R.string.str_submit, null)
+                .setNegativeButton(R.string.str_cancel, null)
                 .create()
 
             dialog.setOnShowListener {
@@ -89,6 +89,13 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
             }
 
             dialog.show()
+        }
+
+        // get attributes
+        attrs?.let {
+            val ta = context.obtainStyledAttributes(attrs, R.styleable.TagCloud)
+            isIndicator = ta.getBoolean(R.styleable.TagCloud_is_indicator, false)
+            ta.recycle()
         }
     }
 
