@@ -36,9 +36,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 //    var tagString: String get() = mTxtvString.text.toString(); set(value) { mTxtvString.text = value }
     val tagString: String get() = mTxtvString.text.toString()
 
-    // the text-view for showing the appearing times
-    private val mTxtvAppearingTimes: TextView
-
     // the image-button for closing (removing) this tag-view
     private val mImgbtnClose: ImageButton
 
@@ -55,7 +52,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         // get views
         mHsvRoot = findViewById(R.id.hsv_root)
         mTxtvString = findViewById(R.id.txtv_string)
-        mTxtvAppearingTimes = findViewById(R.id.txtv_appearing_times)
         mImgbtnClose = findViewById(R.id.imgbtn_close)
 
         // set events
@@ -69,7 +65,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
     constructor(context: Context,
                 tagString: String,
                 isIndicator: Boolean,
-                isShowingAppearingTimes: Boolean,
                 possibleBackgroundColors: HashSet<Int> = DefaultBackgroundColor.getColorsHashSet()): this(context) {
         // set the tag string
         mTxtvString.text = tagString
@@ -77,10 +72,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
         // set the visibility of imgbtn-close
         if (isIndicator)
             mImgbtnClose.visibility = View.GONE
-
-        // set the visibility of txtv-appearing-times
-        if (!isShowingAppearingTimes)
-            mTxtvAppearingTimes.visibility = View.GONE
 
         // set the background color
         mHsvRoot.setBackgroundResource(R.drawable.background_tag_view)
@@ -95,13 +86,6 @@ class TagView(context: Context, attrs: AttributeSet? = null): FrameLayout(contex
 
     internal fun setCloseImageButtonVisibility(visibility: Int) {
         mImgbtnClose.visibility = visibility
-    }
-
-    internal fun setShouldShowAppearingTimes(shouldShowAppearingTimes: Boolean) {
-        mTxtvAppearingTimes.visibility = if (shouldShowAppearingTimes)
-            View.VISIBLE
-        else
-            View.GONE
     }
 
     /* =================================================================== */

@@ -31,20 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    <Button
-            android:id="@+id/btn_show_or_hide_appearing_times"
-            android:text="Show or hide appearing times"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-
-
-
-
-
     <com.rekkursion.tagview.TagCloud
             android:layout_marginTop="100dp"
-            app:is_showing_appearing_times="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </androidx.appcompat.widget.LinearLayoutCompat>

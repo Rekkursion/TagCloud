@@ -2,6 +2,7 @@ package com.rekkursion.tagviewsample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -54,12 +55,6 @@ class MainActivity : AppCompatActivity() {
         val btnSetIsIndicatorOrNot = findViewById<Button>(R.id.btn_set_is_indicator_or_not)
         btnSetIsIndicatorOrNot.setOnClickListener {
             tagCloud.isIndicator = tagCloud.isIndicator.not()
-        }
-
-        // show or hide the appearing times
-        val btnShowOrHideAppearingTimes = findViewById<Button>(R.id.btn_show_or_hide_appearing_times)
-        btnShowOrHideAppearingTimes.setOnClickListener {
-            tagCloud.isShowingAppearingTimes = tagCloud.isShowingAppearingTimes.not()
         }
     }
 }

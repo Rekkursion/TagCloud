@@ -21,4 +21,5 @@
 
     <!--<string name="str_there_is_no_tag">There\'s no tag.</string>-->
     <string name="str_there_is_no_tag">沒有任何存在的標籤</string>
+    <string name="str_add_new_tag">Add new tag.</string>
 </resources>
