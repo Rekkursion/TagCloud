@@ -10,7 +10,7 @@
 
     <com.rekkursion.tagview.TagCloud
             android:id="@+id/tag_cloud"
-            app:is_indicator="true"
+            app:is_indicator="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -28,11 +28,6 @@
     <Button
             android:id="@+id/btn_set_is_indicator_or_not"
             android:text="Set is_indicator or not"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    <com.rekkursion.tagview.TagCloud
-            android:layout_marginTop="100dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </androidx.appcompat.widget.LinearLayoutCompat>

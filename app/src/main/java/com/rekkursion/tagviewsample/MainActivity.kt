@@ -1,5 +1,6 @@
 package com.rekkursion.tagviewsample
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,32 +19,37 @@ class MainActivity : AppCompatActivity() {
 
         // set the possible background colors of all tag-views
         tagCloud.possibleBackgroundColors = hashSetOf(
+            // the default background-colors
             TagView.DefaultBackgroundColor.BLUE.color,
-            TagView.DefaultBackgroundColor.YELLOW.color
+            TagView.DefaultBackgroundColor.YELLOW.color,
+
+            // user-defined background-colors
+            Color.GRAY,
+            Color.rgb(122, 59, 104)
         )
 
-        // set the remove listener
+        // set the listener which is invoked when a tag is removed from this tag-cloud
         tagCloud.setOnTagRemoveListener(object: OnTagRemoveListener {
             override fun onTagRemove(tagCloud: TagCloud, tagView: TagView, index: Int, numOfTagsAfterRemoving: Int) {
                 Toast.makeText(this@MainActivity, "#$index removed, remains $numOfTagsAfterRemoving tags", Toast.LENGTH_SHORT).show()
             }
         })
 
-        // set the listener when the new tag's string has already been added
+        // set the listener which is invoked when the new tag's string has already been added in this tag-cloud
         tagCloud.setOnTagStringConflictListener(object: OnTagStringConflictListener {
             override fun onTagStringConflict(tagCloud: TagCloud, conflictedString: String) {
                 Toast.makeText(this@MainActivity, "\"$conflictedString\" has already been added", Toast.LENGTH_SHORT).show()
             }
         })
 
-        // set the click listener
+        // set the click listener on tags
         tagCloud.setOnTagClickListener(object: OnTagClickListener {
             override fun onTagClick(tagCloud: TagCloud, tagView: TagView, index: Int) {
                 Toast.makeText(this@MainActivity, "#$index has been clicked", Toast.LENGTH_SHORT).show()
             }
         })
 
-        // the edit-text for the new tag's string
+        // the edit-text for inputting the new tag's string
         val edtText = findViewById<EditText>(R.id.edt_text)
 
         // add a new tag into the tag-cloud
@@ -52,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             tagCloud.addTag(edtText.text.toString())
         }
 
+        // the button for setting the tag-cloud above is indicator or not
         val btnSetIsIndicatorOrNot = findViewById<Button>(R.id.btn_set_is_indicator_or_not)
         btnSetIsIndicatorOrNot.setOnClickListener {
             tagCloud.isIndicator = tagCloud.isIndicator.not()
