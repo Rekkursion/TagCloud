@@ -1,22 +1,42 @@
 package com.rekkursion.tagview
 
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.EditText
+import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import androidx.core.view.children
 import com.google.android.flexbox.FlexboxLayout
 
 class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
+    // if this tag-cloud is an indicator or not, default: false
+    private var mIsIndicator: Boolean = false
+    var isIndicator
+        get() = mIsIndicator
+        set(value) {
+            mIsIndicator = value
+            if (mIsIndicator) {
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.GONE) }
+            }
+            else {
+                mFblTagsContainer.children
+                    .forEach { (it as? TagView)?.setCloseImageButtonVisibility(View.VISIBLE) }
+            }
+        }
+
+    // should show the appearing times or not, default: true
+    private var mIsShowingAppearingTimes: Boolean = true
+    var isShowingAppearingTimes
+        get() = mIsShowingAppearingTimes
+        set(value) {
+            mIsShowingAppearingTimes = value
+            mFblTagsContainer.children
+                .forEach { (it as? TagView)?.setShouldShowAppearingTimes(mIsShowingAppearingTimes) }
+        }
+
     // for placing all tag-views
     private val mFblTagsContainer: FlexboxLayout
-
-    // for adding new tag-view
-    private val mImgbtnAddNewTag: ImageButton
 
     // for storing the already-exists tag-views
     private val mTagStringsHashMap: HashMap<String, TagView> = hashMapOf()
@@ -48,39 +68,6 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
 
         // get views
         mFblTagsContainer = findViewById(R.id.fbl_tags_container)
-        mImgbtnAddNewTag = findViewById(R.id.imgbtn_add_new_tag)
-
-        // set events
-        mImgbtnAddNewTag.setOnClickListener {
-            // the edit-text for the user enters the tag string
-            val edtNewTagString = EditText(context)
-            edtNewTagString.requestFocus()
-
-            // the dialog shows for typing
-            val dialog = AlertDialog.Builder(context)
-                .setTitle("Enter the tag")
-                .setView(edtNewTagString)
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", null)
-                .create()
-            dialog.setOnShowListener {
-                val btnPositive = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-                btnPositive.setOnClickListener {
-                    if (doesStringAlreadyExists(edtNewTagString.text.toString())) {
-                        AlertDialog.Builder(context)
-                            .setMessage("The tag already exists")
-                            .setPositiveButton("OK", null)
-                            .create()
-                            .show()
-                    }
-                    else {
-                        addTag(edtNewTagString.text.toString())
-                        dialog.dismiss()
-                    }
-                }
-            }
-            dialog.show()
-        }
     }
 
     /* =================================================================== */
@@ -90,7 +77,7 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
     // add a new tag
     fun addTag(tagString: String, index: Int? = null) {
         // create the tag-view
-        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString) else TagView(context, tagString, mPossibleBackgroundColorsHashSet)
+        val tagView = if (mPossibleBackgroundColorsHashSet.isEmpty()) TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes) else TagView(context, tagString, mIsIndicator, mIsShowingAppearingTimes, mPossibleBackgroundColorsHashSet)
         // set the on-remove-listener of this tag-view
         tagView.setOnRemoveListener(object: TagView.OnRemoveListener {
             override fun onRemove() {
@@ -116,23 +103,27 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         // no problem
         else {
             // add the created tag-view into the container
-            if (index == null) mFblTagsContainer.addView(tagView, mFblTagsContainer.childCount - 1)
-            else mFblTagsContainer.addView(tagView, if (index >= mFblTagsContainer.childCount) mFblTagsContainer.childCount - 1 else index)
+            if (index == null) mFblTagsContainer.addView(tagView)
+            else mFblTagsContainer.addView(tagView, index)
 
             // add the string of new tag into the hash-set
             mTagStringsHashMap[tagString] = tagView
+
+            // add the string of new tag into the global-tag-manager
+            updateAppearingTimes(tagString)
         }
     }
 
     // remove a certain tag-view by index
     fun removeTagByIndex(index: Int): Boolean {
-        if (index < 0 || index >= mFblTagsContainer.childCount - 1)
+        if (index < 0 || index >= mFblTagsContainer.childCount)
             return false
 
         val tagView = (mFblTagsContainer.getChildAt(index) as? TagView) ?: return false
         mFblTagsContainer.removeView(tagView)
-        mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount - 1)
+        mOnTagRemoveListener?.onTagRemove(this@TagCloud, tagView, index, mFblTagsContainer.childCount)
         mTagStringsHashMap.remove(tagView.tagString)
+        updateAppearingTimes(tagView.tagString)
 
         return true
     }
@@ -145,27 +136,22 @@ class TagCloud(context: Context, attrs: AttributeSet? = null): FrameLayout(conte
         return false
     }
 
+    // update the appearing times
+    private fun updateAppearingTimes(tagString: String) {
+        val tagView = mFblTagsContainer
+            .children
+            .find { (it is TagView) && it.tagString == tagString } as? TagView
+    }
+
     /* =================================================================== */
 
     /** getters */
 
-    // get the number of tags
-    fun getNumOfTags(): Int = mFblTagsContainer.childCount - 1
-
-    // get all tag-views
-    fun getAllTags(): List<TagView> = mFblTagsContainer.children.filter { it is TagView }.map { it as TagView }.toList()
-
-    // get tag strings of all tag-views
-    fun getAllTagStrings(): List<String> = mFblTagsContainer.children.filter { it is TagView }.map { (it as TagView).tagString }.toList()
-
     // get the tag-view by index
-    fun getTagAt(index: Int): TagView? = mFblTagsContainer.getChildAt(index) as? TagView
+    fun getTagAt(index: Int): TagView = mFblTagsContainer.getChildAt(index) as TagView
 
     // get the tag string of a tag-view by index
-    fun getTagStringAt(index: Int): String? = getTagAt(index)?.tagString
-
-    // check if a string is conflicted w/ the already-exists tags
-    fun doesStringAlreadyExists(str: String): Boolean = mTagStringsHashMap.containsKey(str)
+    fun getTagStringAt(index: Int): String? = getTagAt(index).tagString
 
     /* =================================================================== */
 

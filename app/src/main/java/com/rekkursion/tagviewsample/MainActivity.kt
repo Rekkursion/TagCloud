@@ -24,11 +24,7 @@ class MainActivity : AppCompatActivity() {
         // set the remove listener
         tagCloud.setOnTagRemoveListener(object: OnTagRemoveListener {
             override fun onTagRemove(tagCloud: TagCloud, tagView: TagView, index: Int, numOfTagsAfterRemoving: Int) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "#$index removed, remains $numOfTagsAfterRemoving tag${if (numOfTagsAfterRemoving <= 1) "" else "s"}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@MainActivity, "#$index removed, remains $numOfTagsAfterRemoving tags", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -53,6 +49,17 @@ class MainActivity : AppCompatActivity() {
         val btnAddTag = findViewById<Button>(R.id.btn_add_tag)
         btnAddTag.setOnClickListener {
             tagCloud.addTag(edtText.text.toString())
+        }
+
+        val btnSetIsIndicatorOrNot = findViewById<Button>(R.id.btn_set_is_indicator_or_not)
+        btnSetIsIndicatorOrNot.setOnClickListener {
+            tagCloud.isIndicator = tagCloud.isIndicator.not()
+        }
+
+        // show or hide the appearing times
+        val btnShowOrHideAppearingTimes = findViewById<Button>(R.id.btn_show_or_hide_appearing_times)
+        btnShowOrHideAppearingTimes.setOnClickListener {
+            tagCloud.isShowingAppearingTimes = tagCloud.isShowingAppearingTimes.not()
         }
     }
 }
